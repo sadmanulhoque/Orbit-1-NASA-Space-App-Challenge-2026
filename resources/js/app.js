@@ -99,6 +99,12 @@ $(document).on("submit", ".ajax-form", function (e) {
         });
 });
 
+$(document).on("click", "#send-surgeon-modal", function (e) {
+    e.preventDefault();
+
+    notyf.error("NASA telemetry connection is not available yet.");
+});
+
 $(document).on("click", '[data-document-preview="image"]', function () {
     const source = $(this).attr("data-document-preview-url") || $(this).attr("src");
 

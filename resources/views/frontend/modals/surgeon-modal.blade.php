@@ -23,7 +23,7 @@
     </div>
     <div class="modal-actions">
         <button class="btn-hud-secondary" data-bs-dismiss="modal" id="cancel-surgeon-modal">Cancel</button>
-        <button class="btn-hud-primary" id="send-surgeon-modal">
+        <button type="button" class="btn-hud-primary" id="send-surgeon-modal">
             <i class="fa-solid fa-satellite-dish"></i> Transmit to Ground Control
         </button>
     </div>
