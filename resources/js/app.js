@@ -29,10 +29,6 @@ $(document).on("click", '[data-bs-toggle="modal"][data-content]', function (e) {
             return;
         }
 
-        modal.find(".select2").select2({
-            dropdownParent: modal,
-        });
-
         initializeSupplierModal(modal);
         initializeColorPicker(modal);
 

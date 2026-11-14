@@ -18,9 +18,12 @@
 
     <!-- Font Awesome 6 Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-
     <!-- Custom CSS -->
-    @vite(['resources/css/app.css'])
+    @vite([
+        'resources/css/app.css',
+        'resources/css/tabler.css',
+        'resources/css/tabler.min.css',
+    ])
 </head>
 
 <body class="space-theme">
@@ -41,19 +44,19 @@
             @yield('content')
         </main>
 
-        <!-- Global AJAX Modal (used by hazards, questionnaire, surgeon) -->
-        <div class="modal fade" id="modal-global" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                <div class="modal-content glass-modal-content">
-                    <div class="modal-body py-5 text-center">
-                        <div class="spinner-border text-info" role="status" aria-label="Loading"></div>
-                    </div>
+        <!-- Footer -->
+        @include('frontend.layout.footer')
+    </div>
+
+    <!-- Global AJAX Modal (used by hazards, questionnaire, surgeon) -->
+    <div class="modal fade" id="modal-global" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content glass-modal-content">
+                <div class="modal-body py-5 text-center">
+                    <div class="spinner-border text-info" role="status" aria-label="Loading"></div>
                 </div>
             </div>
         </div>
-
-        <!-- Footer -->
-        @include('frontend.layout.footer')
     </div>
 
     <!-- TOAST NOTIFICATION CONTAINER -->
@@ -62,6 +65,9 @@
     <!-- Libraries -->
     <!-- Bootstrap 5 Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- jQuery (used by the shared modal and form handlers) -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
 
     <!-- Custom Logic -->
     @vite(['resources/js/app.js'])
