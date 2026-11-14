@@ -3,200 +3,228 @@
 namespace App\Services;
 
 use App\Interfaces\HealthAssessmentInterface;
+use App\Models\HealthAssessment;
 
 class HealthAssessmentService
 {
     public function __construct(
-        protected HealthAssessmentInterface $repository
+        private HealthAssessmentInterface $repository
     ) {}
 
-    public function getLatestAssessment()
+    public function getLatestAssessment(): ?HealthAssessment
     {
         return $this->repository->latest();
     }
 
-    public function processAssessment(array $answers)
+    public function processAssessment(array $answers): HealthAssessment
     {
-        $result = $this->calculateHealthStatus($answers);
+        $result = $this->calculate($answers);
 
         return $this->repository->create($result);
     }
 
-    private function calculateHealthStatus(array $answers): array
+    private function calculate(array $answers): array
     {
-        $score = 100;
-        $brainStatus = 'Normal';
-        $brainDesc = 'Cognitive function is stable.';
-        $heartStatus = 'Normal';
-        $heartDesc = 'HR in range';
-        $bonesStatus = 'Normal';
-        $bonesDesc = 'Bone density within expected range.';
-        $eyesStatus = 'Normal';
-        $eyesDesc = 'Vision stable.';
-        $immuneStatus = 'Normal';
-        $immuneDesc = 'Immune response is good.';
+        $data = $this->initializeBaseData($answers);
 
-        $guidance = [];
-        $mainAlert = null;
+        $this->applySleepImpact($answers['sleep'], $data);
+        $this->applyExerciseImpact($answers['exercise'], $data);
+        $this->applyBoneImpact($answers['bone'], $data);
+        $this->applyMoodImpact($answers['mood'], $data);
+        $this->applyIsolationImpact($answers['isolation'], $data);
+        $this->applyEnergyImpact($answers['energy'], $data);
 
-        // Sleep impact
-        $sleep = (int) $answers['sleep'];
-        if ($sleep <= 5) {
-            $score -= 18;
-            $brainStatus = 'Watch';
-            $brainDesc = 'Possible cognitive fatigue from short sleep.';
-            $guidance[] = 'Prioritize sleep recovery tonight';
-        } elseif ($sleep === 6) {
-            $score -= 8;
-        }
+        $this->finalizeScoreAndStatus($data);
+        $this->setDefaultGuidanceIfEmpty($data);
+        $this->addSimulatedVitals($answers['sleep'], $data);
+        $this->addHazardLevels($answers, $data);
 
-        // Exercise / Bone loading
-        if ($answers['exercise'] === 'no') {
-            $score -= 15;
-            $bonesStatus = 'Watch';
-            $bonesDesc = 'Bone density risk elevated – no resistance training.';
-            $guidance[] = 'Do resistance exercises';
-            $guidance[] = 'Ensure adequate nutrition (Calcium + Vitamin D)';
-            $mainAlert = 'Your bone density risk is elevated due to lack of resistance exercise.';
-        } elseif ($answers['exercise'] === 'partial') {
-            $score -= 7;
-            $bonesStatus = 'Watch';
-            $bonesDesc = 'Bone loading incomplete today.';
-            $guidance[] = 'Complete full resistance protocol';
-            $mainAlert = 'Bone loading was only partial today.';
-        }
+        return $data;
+    }
 
-        // Bone discomfort
-        if ($answers['bone'] === 'moderate') {
-            $score -= 20;
-            $bonesStatus = 'Watch';
-            $bonesDesc = 'Moderate bone/joint discomfort reported.';
-            $mainAlert = 'Moderate bone/joint discomfort detected. Recommend Flight Surgeon review.';
-            $guidance[] = 'Reduce high-impact activity temporarily';
-            $guidance[] = 'Recheck in next check-in';
-        } elseif ($answers['bone'] === 'mild') {
-            $score -= 10;
-            $bonesStatus = 'Watch';
-            $bonesDesc = 'Mild bone/joint discomfort.';
-            if (! $mainAlert) {
-                $mainAlert = 'Mild bone discomfort reported.';
-            }
-            $guidance[] = 'Monitor symptoms closely';
-        }
-
-        // Mood / Cognitive
-        if (in_array($answers['mood'], ['low', 'stressed'])) {
-            $score -= 12;
-            $brainStatus = 'Watch';
-            $brainDesc = $answers['mood'] === 'stressed'
-                ? 'Elevated stress detected.'
-                : 'Cognitive fog reported.';
-            $guidance[] = 'Use relaxation / circadian protocols';
-        }
-
-        // Isolation
-        if ($answers['isolation'] === 'high') {
-            $score -= 10;
-            $guidance[] = 'Schedule crew interaction / private conference';
-        } elseif ($answers['isolation'] === 'medium') {
-            $score -= 5;
-        }
-
-        // Energy
-        if ($answers['energy'] === 'low') {
-            $score -= 8;
-            $immuneStatus = 'Watch';
-            $immuneDesc = 'Possible early fatigue signal.';
-        }
-
-        $score = max(42, min(98, (int) round($score)));
-
-        // Overall status
-        if ($score >= 90) {
-            $overallStatus = 'All Readings Normal';
-            $overallSub = 'Excellent mission readiness';
-        } elseif ($score >= 75) {
-            $overallStatus = 'Minor Attention Needed';
-            $overallSub = 'Some parameters require monitoring';
-        } else {
-            $overallStatus = 'Action Recommended';
-            $overallSub = 'Review Action Guidance below';
-        }
-
-        if (empty($guidance)) {
-            $guidance = [
-                'Maintain current exercise & sleep routine',
-                'Continue daily resistance protocol',
-                'Recheck in next scheduled check-in',
-            ];
-        }
-
-        // Simulated vitals
-        $hr = 68 + rand(0, 11);
-        $sys = 112 + rand(0, 13);
-        $dia = 72 + rand(0, 9);
-        $temp = round(36.4 + (mt_rand(0, 50) / 100), 1);
-        $glucose = 88 + rand(0, 17);
-        $sleepDisplay = $sleep >= 7
-            ? round(7 + (mt_rand(0, 10) / 10), 1)
-            : round($sleep + (mt_rand(0, 8) / 10), 1);
-
-        // Dynamic Hazards based on answers
-        $isolationPct = match ($answers['isolation']) {
-            'high' => 72,
-            'medium' => 48,
-            default => 28,
-        };
-        $isolationLevel = $isolationPct >= 60 ? 'High' : ($isolationPct >= 40 ? 'Medium' : 'Low');
-
-        $gravityPct = ($answers['exercise'] === 'no' || $answers['bone'] !== 'none') ? 75 : 55;
-        $gravityLevel = $gravityPct >= 65 ? 'Medium' : 'Low';
-
-        $closedPct = ($answers['mood'] === 'stressed' || $answers['energy'] === 'low') ? 45 : 25;
-        $closedLevel = $closedPct >= 40 ? 'Medium' : 'Low';
-
+    private function initializeBaseData(array $answers): array
+    {
         return [
-            'sleep_hours' => $sleep,
+            'sleep_hours' => (int) $answers['sleep'],
             'exercise' => $answers['exercise'],
             'bone_discomfort' => $answers['bone'],
             'mood' => $answers['mood'],
             'isolation' => $answers['isolation'],
             'energy' => $answers['energy'],
 
-            'readiness_score' => $score,
-            'overall_status' => $overallStatus,
-            'overall_sub' => $overallSub,
+            'readiness_score' => 100,
+            'overall_status' => null,
+            'overall_sub' => null,
 
-            'brain_status' => $brainStatus,
-            'brain_desc' => $brainDesc,
-            'heart_status' => $heartStatus,
-            'heart_desc' => $heartDesc,
-            'bones_status' => $bonesStatus,
-            'bones_desc' => $bonesDesc,
-            'eyes_status' => $eyesStatus,
-            'eyes_desc' => $eyesDesc,
-            'immune_status' => $immuneStatus,
-            'immune_desc' => $immuneDesc,
+            'brain_status' => 'Normal',
+            'brain_desc' => 'Cognitive function is stable.',
+            'heart_status' => 'Normal',
+            'heart_desc' => 'HR in range',
+            'bones_status' => 'Normal',
+            'bones_desc' => 'Bone density within expected range.',
+            'eyes_status' => 'Normal',
+            'eyes_desc' => 'Vision stable.',
+            'immune_status' => 'Normal',
+            'immune_desc' => 'Immune response is good.',
 
-            'heart_rate' => $hr,
-            'blood_pressure' => "{$sys}/{$dia}",
-            'temperature' => $temp,
-            'blood_glucose' => $glucose,
-            'sleep_hours_display' => $sleepDisplay,
-
-            'main_alert' => $mainAlert,
-            'guidance_items' => $guidance,
-
-            'hazard_radiation' => 'Medium',
-            'hazard_radiation_pct' => 58,
-            'hazard_isolation' => $isolationLevel,
-            'hazard_isolation_pct' => $isolationPct,
-            'hazard_distance' => 'Low',
-            'hazard_distance_pct' => 32,
-            'hazard_gravity' => $gravityLevel,
-            'hazard_gravity_pct' => $gravityPct,
-            'hazard_closed' => $closedLevel,
-            'hazard_closed_pct' => $closedPct,
+            'main_alert' => null,
+            'guidance_items' => [],
         ];
+    }
+
+    private function applySleepImpact(int $sleep, array &$data): void
+    {
+        if ($sleep <= 5) {
+            $data['readiness_score'] -= 18;
+            $data['brain_status'] = 'Watch';
+            $data['brain_desc'] = 'Possible cognitive fatigue from short sleep.';
+            $data['guidance_items'][] = 'Prioritize sleep recovery tonight';
+        } elseif ($sleep === 6) {
+            $data['readiness_score'] -= 8;
+        }
+    }
+
+    private function applyExerciseImpact(string $exercise, array &$data): void
+    {
+        if ($exercise === 'no') {
+            $data['readiness_score'] -= 15;
+            $data['bones_status'] = 'Watch';
+            $data['bones_desc'] = 'Bone density risk elevated – no resistance training.';
+            $data['guidance_items'][] = 'Do resistance exercises';
+            $data['guidance_items'][] = 'Ensure adequate nutrition (Calcium + Vitamin D)';
+            $data['main_alert'] = 'Your bone density risk is elevated due to lack of resistance exercise.';
+        } elseif ($exercise === 'partial') {
+            $data['readiness_score'] -= 7;
+            $data['bones_status'] = 'Watch';
+            $data['bones_desc'] = 'Bone loading incomplete today.';
+            $data['guidance_items'][] = 'Complete full resistance protocol';
+            $data['main_alert'] = 'Bone loading was only partial today.';
+        }
+    }
+
+    private function applyBoneImpact(string $bone, array &$data): void
+    {
+        if ($bone === 'moderate') {
+            $data['readiness_score'] -= 20;
+            $data['bones_status'] = 'Watch';
+            $data['bones_desc'] = 'Moderate bone/joint discomfort reported.';
+            $data['main_alert'] = 'Moderate bone/joint discomfort detected. Recommend Flight Surgeon review.';
+            $data['guidance_items'][] = 'Reduce high-impact activity temporarily';
+            $data['guidance_items'][] = 'Recheck in next check-in';
+        } elseif ($bone === 'mild') {
+            $data['readiness_score'] -= 10;
+            $data['bones_status'] = 'Watch';
+            $data['bones_desc'] = 'Mild bone/joint discomfort.';
+
+            if (! $data['main_alert']) {
+                $data['main_alert'] = 'Mild bone discomfort reported.';
+            }
+
+            $data['guidance_items'][] = 'Monitor symptoms closely';
+        }
+    }
+
+    private function applyMoodImpact(string $mood, array &$data): void
+    {
+        if (in_array($mood, ['low', 'stressed'])) {
+            $data['readiness_score'] -= 12;
+            $data['brain_status'] = 'Watch';
+            $data['brain_desc'] = $mood === 'stressed'
+                ? 'Elevated stress detected.'
+                : 'Cognitive fog reported.';
+            $data['guidance_items'][] = 'Use relaxation / circadian protocols';
+        }
+    }
+
+    private function applyIsolationImpact(string $isolation, array &$data): void
+    {
+        if ($isolation === 'high') {
+            $data['readiness_score'] -= 10;
+            $data['guidance_items'][] = 'Schedule crew interaction / private conference';
+        } elseif ($isolation === 'medium') {
+            $data['readiness_score'] -= 5;
+        }
+    }
+
+    private function applyEnergyImpact(string $energy, array &$data): void
+    {
+        if ($energy === 'low') {
+            $data['readiness_score'] -= 8;
+            $data['immune_status'] = 'Watch';
+            $data['immune_desc'] = 'Possible early fatigue signal.';
+        }
+    }
+
+    private function finalizeScoreAndStatus(array &$data): void
+    {
+        $score = max(42, min(98, (int) round($data['readiness_score'])));
+        $data['readiness_score'] = $score;
+
+        if ($score >= 90) {
+            $data['overall_status'] = 'All Readings Normal';
+            $data['overall_sub'] = 'Excellent mission readiness';
+        } elseif ($score >= 75) {
+            $data['overall_status'] = 'Minor Attention Needed';
+            $data['overall_sub'] = 'Some parameters require monitoring';
+        } else {
+            $data['overall_status'] = 'Action Recommended';
+            $data['overall_sub'] = 'Review Action Guidance below';
+        }
+    }
+
+    private function setDefaultGuidanceIfEmpty(array &$data): void
+    {
+        if (empty($data['guidance_items'])) {
+            $data['guidance_items'] = [
+                'Maintain current exercise & sleep routine',
+                'Continue daily resistance protocol',
+                'Recheck in next scheduled check-in',
+            ];
+        }
+    }
+
+    private function addSimulatedVitals(int $sleep, array &$data): void
+    {
+        $data['heart_rate'] = 68 + rand(0, 11);
+        $sys = 112 + rand(0, 13);
+        $dia = 72 + rand(0, 9);
+        $data['blood_pressure'] = "{$sys}/{$dia}";
+        $data['temperature'] = round(36.4 + (mt_rand(0, 50) / 100), 1);
+        $data['blood_glucose'] = 88 + rand(0, 17);
+
+        $data['sleep_hours_display'] = $sleep >= 7
+            ? round(7 + (mt_rand(0, 10) / 10), 1)
+            : round($sleep + (mt_rand(0, 8) / 10), 1);
+    }
+
+    private function addHazardLevels(array $answers, array &$data): void
+    {
+        // Isolation
+        if ($answers['isolation'] === 'high') {
+            $isolationPct = 72;
+        } elseif ($answers['isolation'] === 'medium') {
+            $isolationPct = 48;
+        } else {
+            $isolationPct = 28;
+        }
+
+        $data['hazard_isolation_pct'] = $isolationPct;
+        $data['hazard_isolation'] = $isolationPct >= 60 ? 'High' : ($isolationPct >= 40 ? 'Medium' : 'Low');
+
+        // Gravity
+        $gravityPct = ($answers['exercise'] === 'no' || $answers['bone'] !== 'none') ? 75 : 55;
+        $data['hazard_gravity_pct'] = $gravityPct;
+        $data['hazard_gravity'] = $gravityPct >= 65 ? 'Medium' : 'Low';
+
+        // Closed environment
+        $closedPct = ($answers['mood'] === 'stressed' || $answers['energy'] === 'low') ? 45 : 25;
+        $data['hazard_closed_pct'] = $closedPct;
+        $data['hazard_closed'] = $closedPct >= 40 ? 'Medium' : 'Low';
+
+        // Static ones
+        $data['hazard_radiation'] = 'Medium';
+        $data['hazard_radiation_pct'] = 58;
+        $data['hazard_distance'] = 'Low';
+        $data['hazard_distance_pct'] = 32;
     }
 }

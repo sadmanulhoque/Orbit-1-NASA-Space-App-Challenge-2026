@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\HealthAssesmentRequest;
 use App\Services\HealthAssessmentService;
-use Illuminate\Support\Facades\Log;
-use Throwable;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class HomeController extends Controller
 {
@@ -14,29 +14,19 @@ class HomeController extends Controller
         protected HealthAssessmentService $service
     ) {}
 
-    public function index()
+    public function index(): View
     {
-        try {
-            $assessment = $this->service->getLatestAssessment();
 
-            return view('frontend.home', compact('assessment'));
-        } catch (Throwable $e) {
-            Log::error('Error fetching latest health assessment: ', [
-                'error' => $e,
-            ]);
-        }
+        $assessment = $this->service->getLatestAssessment();
+
+        return view('frontend.home', compact('assessment'));
+
     }
 
-    public function store(HealthAssesmentRequest $request)
+    public function store(HealthAssesmentRequest $request): RedirectResponse
     {
-        try {
-            $this->service->processAssessment($request->validated());
+        $this->service->processAssessment($request->validated());
 
-            return redirect()->route('home')->with('success', 'Health assessment completed successfully.');
-        } catch (Throwable $e) {
-            Log::error('Error storing health assessment: ', [
-                'error' => $e,
-            ]);
-        }
+        return redirect()->route('home')->with('success', 'Health assessment completed successfully.');
     }
 }
