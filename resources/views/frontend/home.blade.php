@@ -18,19 +18,20 @@
                         <circle class="gauge-track" cx="70" cy="70" r="54"></circle>
                         <circle class="gauge-fill" id="readiness-gauge-fill" cx="70" cy="70" r="54"
                             stroke-dasharray="339.292"
-                            stroke-dashoffset="{{ $assessment ? 339.292 - (339.292 * $assessment->readiness_score / 100) : 339.292 }}"
+                            stroke-dashoffset="{{ $assessment ? 339.292 - (339.292 * $assessment->readiness_score) / 100 : 339.292 }}"
                             style="stroke: {{ $assessment && $assessment->readiness_score >= 90 ? 'var(--neon-green-glow)' : ($assessment && $assessment->readiness_score >= 75 ? 'var(--neon-amber-glow)' : '#f97316') }}">
                         </circle>
                     </svg>
                     <div class="gauge-value-box">
-                        <span class="gauge-number">{{ $assessment->readiness_score ?? 0 }}</span><span class="gauge-percent">%</span>
+                        <span class="gauge-number">{{ $assessment->readiness_score ?? 0 }}</span><span
+                            class="gauge-percent">%</span>
                     </div>
                 </div>
 
                 <div class="gauge-info">
                     <div class="status-tag {{ $assessment && $assessment->readiness_score >= 90 ? 'status-excellent' : '' }}"
-                         style="{{ $assessment && $assessment->readiness_score < 90 ? 'color: var(--neon-amber-glow);' : '' }}">
-                        @if($assessment && $assessment->readiness_score >= 90)
+                        style="{{ $assessment && $assessment->readiness_score < 90 ? 'color: var(--neon-amber-glow);' : '' }}">
+                        @if ($assessment && $assessment->readiness_score >= 90)
                             <i class="fa-solid fa-circle-check"></i>
                             <span>Excellent</span>
                         @elseif($assessment && $assessment->readiness_score >= 75)
@@ -42,8 +43,8 @@
                         @endif
                     </div>
                     <p class="gauge-desc">
-                        @if($assessment)
-                            @if($assessment->readiness_score >= 90)
+                        @if ($assessment)
+                            @if ($assessment->readiness_score >= 90)
                                 You're on track for a successful mission.
                             @elseif($assessment->readiness_score >= 75)
                                 Minor adjustments recommended.
@@ -72,7 +73,8 @@
                     <span class="head-icon blue-glow"><i class="fa-solid fa-shield-halved"></i></span>
                     <h2>NASA's 5 Hazards</h2>
                 </div>
-                <button class="link-btn" id="open-hazards-modal">
+                <button type="button" class="link-btn" data-bs-toggle="modal" data-bs-target="#modal-global"
+                    data-content="{{ route('hazards.index') }}" data-modal-size="lg">
                     View Details <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </div>
@@ -80,18 +82,49 @@
             <div class="hazards-list">
                 @php
                     $hazards = [
-                        ['name' => 'Radiation', 'icon' => 'fa-radiation', 'color' => 'amber', 'level' => $assessment->hazard_radiation ?? 'Medium', 'pct' => $assessment->hazard_radiation_pct ?? 58],
-                        ['name' => 'Isolation', 'icon' => 'fa-users', 'color' => 'green', 'level' => $assessment->hazard_isolation ?? 'Low', 'pct' => $assessment->hazard_isolation_pct ?? 28],
-                        ['name' => 'Distance', 'icon' => 'fa-globe', 'color' => 'cyan', 'level' => $assessment->hazard_distance ?? 'Low', 'pct' => $assessment->hazard_distance_pct ?? 32],
-                        ['name' => 'Gravity', 'icon' => 'fa-ring', 'color' => 'amber', 'level' => $assessment->hazard_gravity ?? 'Medium', 'pct' => $assessment->hazard_gravity_pct ?? 62],
-                        ['name' => 'Closed Environment', 'icon' => 'fa-house-chimney-window', 'color' => 'green', 'level' => $assessment->hazard_closed ?? 'Low', 'pct' => $assessment->hazard_closed_pct ?? 25],
+                        [
+                            'name' => 'Radiation',
+                            'icon' => 'fa-radiation',
+                            'color' => 'amber',
+                            'level' => $assessment->hazard_radiation ?? 'Medium',
+                            'pct' => $assessment->hazard_radiation_pct ?? 58,
+                        ],
+                        [
+                            'name' => 'Isolation',
+                            'icon' => 'fa-users',
+                            'color' => 'green',
+                            'level' => $assessment->hazard_isolation ?? 'Low',
+                            'pct' => $assessment->hazard_isolation_pct ?? 28,
+                        ],
+                        [
+                            'name' => 'Distance',
+                            'icon' => 'fa-globe',
+                            'color' => 'cyan',
+                            'level' => $assessment->hazard_distance ?? 'Low',
+                            'pct' => $assessment->hazard_distance_pct ?? 32,
+                        ],
+                        [
+                            'name' => 'Gravity',
+                            'icon' => 'fa-ring',
+                            'color' => 'amber',
+                            'level' => $assessment->hazard_gravity ?? 'Medium',
+                            'pct' => $assessment->hazard_gravity_pct ?? 62,
+                        ],
+                        [
+                            'name' => 'Closed Environment',
+                            'icon' => 'fa-house-chimney-window',
+                            'color' => 'green',
+                            'level' => $assessment->hazard_closed ?? 'Low',
+                            'pct' => $assessment->hazard_closed_pct ?? 25,
+                        ],
                     ];
                 @endphp
 
-                @foreach($hazards as $h)
+                @foreach ($hazards as $h)
                     <div class="hazard-row">
                         <div class="hazard-label">
-                            <span class="hazard-icon color-{{ $h['color'] }}"><i class="fa-solid {{ $h['icon'] }}"></i></span>
+                            <span class="hazard-icon color-{{ $h['color'] }}"><i
+                                    class="fa-solid {{ $h['icon'] }}"></i></span>
                             <span class="hazard-name">{{ $h['name'] }}</span>
                         </div>
                         <div class="hazard-bar-container">
@@ -108,10 +141,8 @@
     <section class="grid-col col-center">
         <div class="astronaut-viewport-stage" id="astronaut-stage">
             <div class="astronaut-static-layer">
-                <img src="{{ asset('assets/body-transparent.png') }}"
-                     alt="Astronaut"
-                     class="astronaut-static-img"
-                     onerror="this.src = 'images/body.png'" />
+                <img src="{{ asset('assets/body-transparent.png') }}" alt="Astronaut" class="astronaut-static-img"
+                    onerror="this.src = 'images/body.png'" />
             </div>
 
             <!-- Brain -->
@@ -159,7 +190,8 @@
                                 <span class="dot"></span>{{ $assessment->bones_status ?? 'Normal' }}
                             </span>
                         </div>
-                        <div class="hotspot-desc">{{ $assessment->bones_desc ?? 'Bone density within expected range.' }}</div>
+                        <div class="hotspot-desc">{{ $assessment->bones_desc ?? 'Bone density within expected range.' }}
+                        </div>
                     </div>
                 </div>
                 <div class="hotspot-line line-bones"></div>
@@ -227,7 +259,8 @@
                     <div class="chart-tooltip-marker" id="chart-marker">
                         <div class="tooltip-box">
                             <div class="tooltip-title">Day 12</div>
-                            <div class="tooltip-val"><span class="tt-dot"></span> HR: {{ $assessment->heart_rate ?? 72 }} bpm</div>
+                            <div class="tooltip-val"><span class="tt-dot"></span> HR: {{ $assessment->heart_rate ?? 72 }}
+                                bpm</div>
                         </div>
                     </div>
                 </div>
@@ -247,7 +280,8 @@
                     <span class="head-icon blue-glow"><i class="fa-regular fa-calendar-days"></i></span>
                     <h2>Health Status</h2>
                 </div>
-                <button class="edit-pill-btn" id="open-checkin-edit">
+                <button type="button" class="edit-pill-btn" data-bs-toggle="modal" data-bs-target="#modal-global"
+                    data-content="{{ route('assessment.create') }}" data-modal-size="lg">
                     <i class="fa-solid fa-pencil"></i> Edit
                 </button>
             </div>
@@ -262,7 +296,8 @@
                         <span class="vital-val" id="val-heart-rate">{{ $assessment->heart_rate ?? '--' }}</span>
                         <span class="vital-unit">bpm</span>
                         <svg class="vital-sparkline" viewBox="0 0 45 18">
-                            <path d="M0,9 L12,9 L15,2 L19,16 L23,5 L26,11 L29,9 L45,9" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M0,9 L12,9 L15,2 L19,16 L23,5 L26,11 L29,9 L45,9" fill="none" stroke="#10b981"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                     </div>
                 </div>
@@ -313,7 +348,7 @@
             </div>
 
             <div class="checkin-status-banner"
-                 style="{{ $assessment && $assessment->readiness_score < 75 ? 'background: linear-gradient(135deg, rgba(180, 83, 9, 0.25) 0%, rgba(146, 64, 14, 0.35) 100%); border-color: rgba(245, 158, 11, 0.5);' : '' }}">
+                style="{{ $assessment && $assessment->readiness_score < 75 ? 'background: linear-gradient(135deg, rgba(180, 83, 9, 0.25) 0%, rgba(146, 64, 14, 0.35) 100%); border-color: rgba(245, 158, 11, 0.5);' : '' }}">
                 <div class="status-check-circle">
                     <i class="fa-solid fa-check"></i>
                 </div>
@@ -343,8 +378,8 @@
             </div>
 
             <ul class="guidance-checklist">
-                @if($assessment && is_array($assessment->guidance_items))
-                    @foreach($assessment->guidance_items as $item)
+                @if ($assessment && is_array($assessment->guidance_items))
+                    @foreach ($assessment->guidance_items as $item)
                         <li>
                             <span class="check-pill"><i class="fa-solid fa-check"></i></span>
                             <span>{{ $item }}</span>
@@ -358,7 +393,8 @@
                 @endif
             </ul>
 
-            <button class="btn-primary-cta" id="btn-contact-surgeon">
+            <button type="button" class="btn-primary-cta" data-bs-toggle="modal" data-bs-target="#modal-global"
+                data-content="{{ route('surgeon.index') }}" data-modal-size="md">
                 <i class="fa-solid fa-paper-plane"></i>
                 <span>Contact Flight Surgeon</span>
             </button>

@@ -1,157 +1,250 @@
-document.addEventListener('DOMContentLoaded', () => {
-    initStarfield();
-    initModals();
-    initHealthTrendsChart();
-    initHotspotFeedback();
+$(document).on("click", '[data-bs-toggle="modal"][data-content]', function (e) {
+    e.preventDefault();
+
+    const trigger = $(this);
+    const target = trigger.attr("data-bs-target");
+    const contentUrl = trigger.attr("data-content");
+    const modal = $(target);
+
+    if (!modal.length || !contentUrl) {
+        return;
+    }
+
+    const dialog = modal.find(".modal-dialog");
+    const size = trigger.attr("data-modal-size");
+
+    dialog.removeClass("modal-sm modal-lg modal-xl modal-dialog-scrollable");
+    dialog.addClass(size ? `modal-${size}` : "modal-lg");
+    dialog.addClass("modal-dialog-scrollable");
+    modal.find(".modal-content").html(
+        '<div class="modal-body text-center py-5"><div class="spinner-border text-primary" role="status" aria-label="Loading"></div></div>'
+    );
+
+    modal.find(".modal-content").load(contentUrl, function (response, status) {
+        if (status === "error") {
+            modal.find(".modal-content").html(
+                '<div class="modal-body text-center py-5 text-danger">Unable to load this content.</div>'
+            );
+
+            return;
+        }
+
+        modal.find(".select2").select2({
+            dropdownParent: modal,
+        });
+
+        initializeSupplierModal(modal);
+        initializeColorPicker(modal);
+
+        modal.find(".datepicker").each(function () {
+            new Litepicker({
+                element: this,
+                buttonText: {
+                    previousMonth: `<svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 6l-6 6l6 6" /></svg>`,
+                    nextMonth: `<svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6" /></svg>`,
+                },
+            });
+        });
+    });
 });
 
-/* Starfield */
-function initStarfield() {
-    const canvas = document.getElementById('stars-canvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
+$(document).on("submit", ".ajax-form", function (e) {
+    e.preventDefault();
 
-    window.addEventListener('resize', () => {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-    });
+    const form = $(this);
+    const modal = form.closest(".modal");
+    const submitButton = form.find('[type="submit"]');
+    const submitLabel = submitButton.attr("data-submit-label") || submitButton.text().trim();
 
-    const stars = Array.from({ length: 120 }, () => ({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        size: Math.random() * 1.6 + 0.4,
-        alpha: Math.random(),
-        speed: Math.random() * 0.015 + 0.005,
-        direction: Math.random() > 0.5 ? 1 : -1
-    }));
+    clearValidationErrors(form);
+    submitButton
+        .prop("disabled", true)
+        .html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...');
 
-    function animate() {
-        ctx.clearRect(0, 0, width, height);
-        stars.forEach(star => {
-            star.alpha += star.speed * star.direction;
-            if (star.alpha >= 1 || star.alpha <= 0.1) star.direction *= -1;
-            ctx.beginPath();
-            ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(186, 230, 253, ${star.alpha * 0.75})`;
-            ctx.fill();
+    $.ajax({
+        url: form.attr("action"),
+        method: form.attr("method") || "POST",
+        data: new FormData(this),
+        processData: false,
+        contentType: false,
+        headers: {
+            "X-Modal-Request": "true",
+            Accept: "application/json",
+        },
+    })
+        .done(function (response) {
+            if (response.status === "success") {
+                if (typeof notyf !== "undefined") {
+                    notyf.success(response.message);
+                }
+
+                bootstrap.Modal.getInstance(modal[0])?.hide();
+
+                if (response.tableName && $.fn.DataTable.isDataTable(`#${response.tableName}`)) {
+                    $(`#${response.tableName}`).DataTable().ajax.reload(null, false);
+                } else {
+                    window.location.reload();
+                }
+            }
+        })
+        .fail(function (xhr) {
+            if (xhr.responseJSON?.errors) {
+                showValidationErrors(form, xhr.responseJSON.errors);
+            } else if (xhr.responseJSON?.message && typeof notyf !== "undefined") {
+                notyf.error(xhr.responseJSON.message);
+            }
+        })
+        .always(function () {
+            submitButton.prop("disabled", false).text(submitLabel);
         });
-        requestAnimationFrame(animate);
-    }
-    animate();
-}
+});
 
-/* Modals */
-function initModals() {
-    // Questionnaire open (Edit button)
-    document.getElementById('open-checkin-edit')?.addEventListener('click', () => {
-        document.getElementById('modal-questionnaire')?.classList.add('active');
-    });
+$(document).on("click", '[data-document-preview="image"]', function () {
+    const source = $(this).attr("data-document-preview-url") || $(this).attr("src");
 
-    // Flight Surgeon
-    const surgeonModal = document.getElementById('modal-surgeon');
-    document.getElementById('btn-contact-surgeon')?.addEventListener('click', () => surgeonModal?.classList.add('active'));
-    document.getElementById('close-surgeon-modal')?.addEventListener('click', () => surgeonModal?.classList.remove('active'));
-    document.getElementById('cancel-surgeon-modal')?.addEventListener('click', () => surgeonModal?.classList.remove('active'));
-    document.getElementById('send-surgeon-modal')?.addEventListener('click', () => {
-        surgeonModal?.classList.remove('active');
-        showToast('Telemetry & Message Transmitted to Flight Surgeon', 'fa-solid fa-satellite-dish');
-    });
-
-    // Hazards
-    const hazardsModal = document.getElementById('modal-hazards');
-    document.getElementById('open-hazards-modal')?.addEventListener('click', () => hazardsModal?.classList.add('active'));
-    document.getElementById('close-hazards-modal')?.addEventListener('click', () => hazardsModal?.classList.remove('active'));
-    document.getElementById('ack-hazards-modal')?.addEventListener('click', () => hazardsModal?.classList.remove('active'));
-
-    // Outside click close
-    window.addEventListener('click', (e) => {
-        if (e.target === surgeonModal) surgeonModal.classList.remove('active');
-        if (e.target === hazardsModal) hazardsModal.classList.remove('active');
-    });
-}
-
-function showToast(message, iconClass = 'fa-solid fa-info-circle') {
-    const container = document.getElementById('toast-container');
-    if (!container) return;
-    const toast = document.createElement('div');
-    toast.className = 'hud-toast';
-    toast.innerHTML = `<i class="${iconClass}" style="color: var(--neon-cyan);"></i><span>${message}</span>`;
-    container.appendChild(toast);
-    setTimeout(() => toast.remove(), 4000);
-}
-
-/* Simple chart */
-function initHealthTrendsChart() {
-    const canvas = document.getElementById('healthTrendsCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const currentHR = parseInt(document.querySelector('.tooltip-val')?.textContent.match(/\d+/)?.[0]) || 72;
-
-    const data = {
-        hr: [78, 85, 75, currentHR],
-        bp: [120, 126, 122, 118],
-        temp: [36.7, 36.8, 36.6, 36.6]
-    };
-
-    function resize() {
-        const rect = canvas.getBoundingClientRect();
-        canvas.width = rect.width * devicePixelRatio;
-        canvas.height = rect.height * devicePixelRatio;
-        ctx.scale(devicePixelRatio, devicePixelRatio);
-        draw();
+    if (!source) {
+        return;
     }
 
-    function getY(val, min, max, h) {
-        return h - 15 - ((val - min) / (max - min)) * (h - 30);
+    const previewModal = $("#modal-document-preview");
+    previewModal.find("[data-document-preview-pdf]").addClass("d-none").attr("src", "");
+    previewModal.find("[data-document-preview-image]").attr("src", source).removeClass("d-none");
+    bootstrap.Modal.getOrCreateInstance(previewModal[0]).show();
+});
+
+$(document).on("click", '[data-document-preview="pdf"]', function () {
+    const source = $(this).attr("src");
+
+    if (!source) {
+        return;
     }
 
-    function drawLine(points, color) {
-        ctx.beginPath();
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 2.5;
-        ctx.lineCap = 'round';
-        ctx.moveTo(points[0].x, points[0].y);
-        for (let i = 0; i < points.length - 1; i++) {
-            const mid = (points[i].x + points[i+1].x) / 2;
-            ctx.bezierCurveTo(mid, points[i].y, mid, points[i+1].y, points[i+1].x, points[i+1].y);
+    const previewModal = $("#modal-document-preview");
+    previewModal.find("[data-document-preview-image]").addClass("d-none").attr("src", "");
+    previewModal.find("[data-document-preview-pdf]").attr("src", source).removeClass("d-none");
+    bootstrap.Modal.getOrCreateInstance(previewModal[0]).show();
+});
+
+$(document).on("click", "[data-document-preview-pdf-trigger]", function (event) {
+    if ($(event.target).is('[data-document-preview="image"]')) {
+        return;
+    }
+
+    const source = $(this).attr("data-document-preview-url") || $(this).find('[data-document-preview="pdf"]').attr("src");
+
+    if (!source) {
+        return;
+    }
+
+    const previewModal = $("#modal-document-preview");
+    previewModal.find("[data-document-preview-image]").addClass("d-none").attr("src", "");
+    previewModal.find("[data-document-preview-pdf]").attr("src", source).removeClass("d-none");
+    bootstrap.Modal.getOrCreateInstance(previewModal[0]).show();
+});
+
+$(document).on("hidden.bs.modal", "#modal-document-preview", function () {
+    $(this).find("[data-document-preview-image]").attr("src", "");
+    $(this).find("[data-document-preview-pdf]").attr("src", "");
+});
+
+function initializeSupplierModal(modal) {
+    modal.find("[data-supplier-document-input]").off("change.supplierPreview").on("change.supplierPreview", function () {
+        const file = this.files[0];
+        const imagePreview = modal.find("[data-supplier-image-preview]");
+        const pdfPreview = modal.find("[data-supplier-pdf-preview]");
+
+        if (!file) {
+            return;
         }
-        ctx.stroke();
-        points.forEach((p, i) => {
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, i === points.length-1 ? 4.5 : 3, 0, Math.PI*2);
-            ctx.fillStyle = '#fff';
-            ctx.fill();
-        });
-    }
 
-    function draw() {
-        const rect = canvas.getBoundingClientRect();
-        const w = rect.width, h = rect.height;
-        ctx.clearRect(0, 0, w, h);
-        ctx.strokeStyle = 'rgba(56,189,248,0.08)';
-        for (let i = 0; i < 4; i++) {
-            ctx.beginPath();
-            ctx.moveTo(0, (h/3)*i);
-            ctx.lineTo(w, (h/3)*i);
-            ctx.stroke();
+        if (file.type === "application/pdf") {
+            const pdfUrl = URL.createObjectURL(file);
+            pdfPreview.attr("src", pdfUrl).removeClass("d-none");
+            pdfPreview.closest("[data-document-preview-pdf-trigger]").attr("data-document-preview-url", pdfUrl);
+            imagePreview.addClass("d-none");
+        } else if (file.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                imagePreview.attr("src", event.target.result).removeClass("d-none");
+                pdfPreview.attr("src", "").addClass("d-none");
+                pdfPreview.closest("[data-document-preview-pdf-trigger]").attr("data-document-preview-url", "");
+            };
+            reader.readAsDataURL(file);
         }
-        const step = w / 3;
-        drawLine(data.hr.map((v,i) => ({x: i*step, y: getY(v,60,150,h)})), '#d946ef');
-        drawLine(data.bp.map((v,i) => ({x: i*step, y: getY(v,60,150,h)})), '#38bdf8');
-        drawLine(data.temp.map((v,i) => ({x: i*step, y: getY(60 + ((v-36)/1.5)*35, 60,150,h)})), '#10b981');
-    }
-
-    window.addEventListener('resize', resize);
-    setTimeout(resize, 50);
+    });
 }
 
-function initHotspotFeedback() {
-    document.querySelectorAll('.holo-hotspot').forEach(el => {
-        el.addEventListener('click', () => {
-            el.style.transform = 'scale(1.08)';
-            setTimeout(() => el.style.transform = '', 300);
-        });
+function initializeColorPicker(modal) {
+    const colorPicker = modal.find("[data-color-picker]");
+
+    if (!colorPicker.length || typeof window.Coloris === "undefined") {
+        return;
+    }
+
+    window.Coloris({
+        el: `#${colorPicker.attr("id")}`,
+        parent: `#${modal.attr("id")}`,
+        selectInput: false,
+        alpha: false,
+        format: "hex",
+        swatches: [
+            "#0054a6",
+            "#45aaf2",
+            "#6574cd",
+            "#a55eea",
+            "#f66d9b",
+            "#fa4654",
+            "#fd9644",
+            "#f1c40f",
+            "#7bd235",
+            "#5eba00",
+            "#2bcbba",
+            "#17a2b8",
+        ],
+    });
+}
+
+$(document).on("hidden.bs.modal", "#modal-global", function () {
+    $(this).find(".modal-content").empty();
+});
+
+function clearValidationErrors(form) {
+    form.find(".is-invalid").removeClass("is-invalid");
+    form.find(".form-errors").remove();
+    form.find(".text-danger").removeClass("text-danger");
+}
+
+function showValidationErrors(form, errors) {
+    clearValidationErrors(form);
+
+    Object.entries(errors).forEach(([fieldName, messages]) => {
+        const field = form.find(`[name="${fieldName}"]`).first();
+
+        if (!field.length) {
+            return;
+        }
+
+        field.addClass("is-invalid");
+
+        // Walk up to the nearest ancestor with a col-* or mb-* class,
+        // instead of only matching a hardcoded list of grid classes.
+        const fieldGroup = field.parents().filter(function () {
+            return /(^|\s)(col-|mb-)/.test(this.className);
+        }).first();
+
+        if (!fieldGroup.length) {
+            if (typeof notyf !== "undefined") {
+                notyf.error(messages[0]);
+            }
+            return;
+        }
+
+        fieldGroup.addClass("text-danger");
+        const feedback = $('<small class="text-danger form-errors d-block mt-1"></small>').text(messages[0]);
+        fieldGroup.append(feedback);
+
+        if (typeof notyf !== "undefined") {
+            notyf.error(messages[0]);
+        }
     });
 }

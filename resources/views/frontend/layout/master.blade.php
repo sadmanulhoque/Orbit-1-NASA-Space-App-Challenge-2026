@@ -41,15 +41,16 @@
             @yield('content')
         </main>
 
-        <!-- ===================== QUESTIONNAIRE MODAL ===================== -->
-        @include('frontend.modals.ques-modal')
-
-        <!-- Flight Surgeon Modal -->
-        @include('frontend.modals.surgeon-modal')
-
-
-        <!-- Hazards Details Modal -->
-        @include('frontend.modals.hazards-modal')
+        <!-- Global AJAX Modal (used by hazards, questionnaire, surgeon) -->
+        <div class="modal fade" id="modal-global" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content glass-modal-content">
+                    <div class="modal-body py-5 text-center">
+                        <div class="spinner-border text-info" role="status" aria-label="Loading"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Footer -->
         @include('frontend.layout.footer')
