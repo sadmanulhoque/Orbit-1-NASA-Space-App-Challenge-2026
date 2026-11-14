@@ -283,7 +283,7 @@
                 <button type="button" class="edit-pill-btn" data-bs-toggle="modal" data-bs-target="#modal-global"
                     data-content="{{ route('assessment.create') }}" data-modal-size="lg"
                     data-auto-open-modal="assessment">
-                    <i class="fa-solid fa-pencil"></i> Edit
+                    <i class="fa-solid fa-pencil"></i> New Assessment
                 </button>
             </div>
 

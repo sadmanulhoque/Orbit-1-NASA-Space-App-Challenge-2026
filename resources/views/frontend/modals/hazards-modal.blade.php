@@ -1,14 +1,11 @@
-    <div class="hud-modal" id="modal-hazards">
-        <div class="hud-modal-dialog modal-lg">
-            <div class="hud-modal-header">
-                <div class="modal-title-wrap">
-                    <i class="fa-solid fa-shield-halved text-cyan"></i>
-                    <h3>NASA's 5 Hazards of Human Spaceflight</h3>
-                </div>
-                <button class="modal-close-btn" id="close-hazards-modal">&times;</button>
-            </div>
-            <div class="hud-modal-body">
-                <div class="hazard-detail-grid">
+<div class="modal-header assessment-modal-header">
+    <div>
+        <h5 class="modal-title">NASA's 5 Hazards of Human Spaceflight</h5>
+    </div>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body assessment-modal-body">
+  <div class="hazard-detail-grid">
                     <div class="hazard-detail-card">
                         <h4><i class="fa-solid fa-radiation color-amber"></i> 1. Space Radiation</h4>
                         <p>Invisible to the human eye, radiation exposure increases cancer risk, damages CNS, and causes tissue degradation. Current Status: Moderate shielding active.</p>
@@ -31,8 +28,10 @@
                     </div>
                 </div>
                 <div class="modal-actions mt-3">
-                    <button class="btn-hud-primary" id="ack-hazards-modal">Acknowledge</button>
+                    <button class="btn-hud-primary" data-bs-dismiss="modal" id="ack-hazards-modal">Acknowledge</button>
                 </div>
-            </div>
-        </div>
-    </div>
+</div>
+
+
+
+

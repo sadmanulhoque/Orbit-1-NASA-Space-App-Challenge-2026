@@ -45,6 +45,8 @@ class HomeController extends Controller
 
     public function surgeon(): View
     {
-        return view('frontend.modals.surgeon-modal');
+        $assessment = $this->service->getLatestAssessment();
+
+        return view('frontend.modals.surgeon-modal', compact('assessment'));
     }
 }
