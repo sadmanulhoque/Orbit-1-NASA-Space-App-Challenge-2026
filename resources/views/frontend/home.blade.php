@@ -281,7 +281,8 @@
                     <h2>Health Status</h2>
                 </div>
                 <button type="button" class="edit-pill-btn" data-bs-toggle="modal" data-bs-target="#modal-global"
-                    data-content="{{ route('assessment.create') }}" data-modal-size="lg">
+                    data-content="{{ route('assessment.create') }}" data-modal-size="lg"
+                    data-auto-open-modal="assessment">
                     <i class="fa-solid fa-pencil"></i> Edit
                 </button>
             </div>

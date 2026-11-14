@@ -44,6 +44,14 @@ $(document).on("click", '[data-bs-toggle="modal"][data-content]', function (e) {
     });
 });
 
+$(function () {
+    const assessmentTrigger = $('[data-auto-open-modal="assessment"]').first().get(0);
+
+    if (assessmentTrigger) {
+        assessmentTrigger.click();
+    }
+});
+
 $(document).on("submit", ".ajax-form", function (e) {
     e.preventDefault();
 
