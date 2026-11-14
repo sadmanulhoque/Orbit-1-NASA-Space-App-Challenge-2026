@@ -55,7 +55,7 @@
             <div class="card-footer-pill">
                 <div class="streak-pill">
                     <i class="fa-solid fa-star streak-star"></i>
-                    <span>Streak: <strong>12 Days</strong></span>
+                    <span>Streak: <strong>{{ $streakDays }} Days</strong></span>
                 </div>
             </div>
         </div>

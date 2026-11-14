@@ -2,6 +2,12 @@
 
 namespace App\Services;
 
+use App\Enums\CognitiveMood;
+use App\Enums\EnergyLevel;
+use App\Enums\Exercises;
+use App\Enums\Feelings;
+use App\Enums\MuscleDiscomfort;
+use App\Enums\SleepHours;
 use App\Interfaces\HealthAssessmentInterface;
 use App\Models\HealthAssessment;
 
@@ -14,6 +20,13 @@ class HealthAssessmentService
     public function getLatestAssessment(): ?HealthAssessment
     {
         return $this->repository->latest();
+    }
+
+    public function getAssessmentStreakDays(?HealthAssessment $assessment): int
+    {
+        return $assessment
+        ? $assessment->created_at->startOfDay()->diffInDays(now()->startOfDay()) + 1
+        : 0;
     }
 
     public function processAssessment(array $answers): HealthAssessment
@@ -226,5 +239,38 @@ class HealthAssessmentService
         $data['hazard_radiation_pct'] = 58;
         $data['hazard_distance'] = 'Low';
         $data['hazard_distance_pct'] = 32;
+    }
+
+
+    public function getSleepHours(): array
+    {
+        return SleepHours::cases();
+    }
+
+    public function getExercises(): array
+    {
+        return Exercises::cases();
+    }
+
+    public function getMusclediscomfort(): array
+    {
+        return MuscleDiscomfort::cases();
+    }
+
+    public function getCognitiveMood(): array
+    {
+        return CognitiveMood::cases();
+    }
+
+    public function getFeelings(): array
+    {
+        return Feelings::cases();
+    }
+
+
+
+    public function getEnergyLevel(): array
+    {
+        return EnergyLevel::cases();
     }
 }

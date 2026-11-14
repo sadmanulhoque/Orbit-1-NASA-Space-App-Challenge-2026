@@ -78,13 +78,9 @@ $(document).on("submit", ".ajax-form", function (e) {
 
                 bootstrap.Modal.getInstance(modal[0])?.hide();
 
-                if (response.tableName && $.fn.DataTable.isDataTable(`#${response.tableName}`)) {
-                    $(`#${response.tableName}`).DataTable().ajax.reload(null, false);
-                } else {
-                    setTimeout(function () {
-                        window.location.reload();
-                    }, 2500);
-                }
+                setTimeout(function () {
+                    window.location.reload();
+                }, 500);
             }
         })
         .fail(function (xhr) {
@@ -104,6 +100,7 @@ $(document).on("click", "#send-surgeon-modal", function (e) {
 
     notyf.error("NASA telemetry connection is not available yet.");
 });
+
 
 $(document).on("click", '[data-document-preview="image"]', function () {
     const source = $(this).attr("data-document-preview-url") || $(this).attr("src");

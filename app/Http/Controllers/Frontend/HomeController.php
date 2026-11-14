@@ -19,14 +19,22 @@ class HomeController extends Controller
     {
 
         $assessment = $this->service->getLatestAssessment();
+        $streakDays = $this->service->getAssessmentStreakDays($assessment);
 
-        return view('frontend.home', compact('assessment'));
+        return view('frontend.home', compact('assessment', 'streakDays'));
 
     }
 
     public function create(): View
     {
-        return view('frontend.modals.assessment-modal');
+        $sleepHours = $this->service->getSleepHours();
+        $exercises = $this->service->getExercises();
+        $muscleDiscomfort = $this->service->getMusclediscomfort();
+        $cognitiveMood = $this->service->getCognitiveMood();
+        $feelings = $this->service->getFeelings();
+        $energyLevel = $this->service->getEnergyLevel();
+
+        return view('frontend.modals.assessment-modal', compact('sleepHours', 'exercises', 'muscleDiscomfort', 'cognitiveMood', 'feelings', 'energyLevel'));
     }
 
     public function storeAssessment(HealthAssesmentRequest $request): JsonResponse

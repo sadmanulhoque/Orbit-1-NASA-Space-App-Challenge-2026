@@ -45,9 +45,13 @@ class HealthAssessment extends Model
         'hazard_closed_pct',
     ];
 
-    protected $casts = [
-        'guidance_items' => 'array',
-        'temperature' => 'float',
-        'sleep_hours_display' => 'float',
-    ];
+
+    protected function casts(): array
+    {
+        return [
+            'guidance_items' => 'array',
+            'temperature' => 'float',
+            'sleep_hours_display' => 'float',
+        ];
+    }
 }

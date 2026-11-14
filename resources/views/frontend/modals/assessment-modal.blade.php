@@ -20,62 +20,72 @@
             <div class="form-group assessment-field">
                 <label class="hud-label">1. How many hours did you sleep last night?</label>
                 <select class="hud-input" name="sleep" required>
-                    <option value="">Select...</option>
-                    <option value="5">Less than 5 hours</option>
-                    <option value="6">5–6 hours</option>
-                    <option value="7">7–8 hours</option>
-                    <option value="9">More than 8 hours</option>
+                    <option value="">Select</option>
+                    @forelse ($sleepHours as $sleepHour)
+                        <option value="{{ $sleepHour->value }}">{{ $sleepHour->label() }}</option>
+                    @empty
+                        <option value="">No sleep hour options available</option>
+                    @endforelse
                 </select>
             </div>
 
             <div class="form-group assessment-field">
                 <label class="hud-label">2. Did you complete resistance / bone-loading exercises today?</label>
                 <select class="hud-input" name="exercise" required>
-                    <option value="">Select...</option>
-                    <option value="yes">Yes, full session</option>
-                    <option value="partial">Partial / light session</option>
-                    <option value="no">No</option>
+                    <option value="">Select</option>
+                    @forelse ($exercises as $exercise)
+                        <option value="{{ $exercise->value }}">{{ $exercise->label() }}</option>
+                    @empty
+                        <option value="">No exercise options available</option>
+                    @endforelse
                 </select>
             </div>
 
             <div class="form-group assessment-field">
                 <label class="hud-label">3. Any bone, joint or muscle discomfort?</label>
                 <select class="hud-input" name="bone" required>
-                    <option value="">Select...</option>
-                    <option value="none">None</option>
-                    <option value="mild">Mild discomfort</option>
-                    <option value="moderate">Moderate / noticeable</option>
+                    <option value="">Select</option>
+                    @forelse ($muscleDiscomfort as $discomfort)
+                        <option value="{{ $discomfort->value }}">{{ $discomfort->label() }}</option>
+                    @empty
+                        <option value="">No discomfort options available</option>
+                    @endforelse
                 </select>
             </div>
 
             <div class="form-group assessment-field">
                 <label class="hud-label">4. How is your current cognitive clarity & mood?</label>
                 <select class="hud-input" name="mood" required>
-                    <option value="">Select...</option>
-                    <option value="excellent">Excellent / Sharp</option>
-                    <option value="good">Good</option>
-                    <option value="low">Low energy / Foggy</option>
-                    <option value="stressed">Stressed / Anxious</option>
+                    <option value="">Select</option>
+                    @forelse ($cognitiveMood as $mood)
+                        <option value="{{ $mood->value }}">{{ $mood->label() }}</option>
+                    @empty
+                        <option value="">No mood options available</option>
+                    @endforelse
                 </select>
             </div>
 
             <div class="form-group assessment-field">
                 <label class="hud-label">5. How isolated / confined do you feel today?</label>
                 <select class="hud-input" name="isolation" required>
-                    <option value="">Select...</option>
-                    <option value="low">Not at all / Low</option>
-                    <option value="medium">Somewhat</option>
-                    <option value="high">Quite isolated</option>
+                    <option value="">Select</option>
+                    @forelse ($feelings as $feeling)
+                        <option value="{{ $feeling->value }}">{{ $feeling->label() }}</option>
+                    @empty
+                        <option value="">No feeling options available</option>
+                    @endforelse
                 </select>
             </div>
 
             <div class="form-group assessment-field">
                 <label class="hud-label">6. Overall physical energy level right now?</label>
                 <select class="hud-input" name="energy" required>
-                    <option value="">Select...</option>
-                    <option value="high">High</option>
-                    <option value="normal">Normal</option>
-                    <option value="low">Low / Fatigued</option>
+                    <option value="">Select</option>
+                    @forelse ($energyLevel as $energy)
+                        <option value="{{ $energy->value }}">{{ $energy->label() }}</option>
+                    @empty
+                        <option value="">No energy level options available</option>
+                    @endforelse
                 </select>
             </div>
 
