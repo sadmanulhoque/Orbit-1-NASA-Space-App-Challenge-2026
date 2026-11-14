@@ -1551,6 +1551,111 @@ html, body {
   filter: brightness(1.1);
 }
 
+/* Global AJAX modal */
+#modal-global .modal-content {
+  overflow: hidden;
+  color: #f8fafc;
+  background: #151515;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
+}
+
+#modal-global .assessment-modal-header {
+  padding: 20px 24px;
+  background: #151515;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+#modal-global .assessment-modal-header .modal-title {
+  color: #f8fafc;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.assessment-modal-subtitle,
+.assessment-form-note {
+  color: #94a3b8;
+  font-size: 0.78rem;
+}
+
+#modal-global .assessment-modal-body {
+  padding: 12px 24px 24px;
+  background: #151515;
+}
+
+.assessment-form-panel {
+  padding: 24px;
+  background: #181818;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+}
+
+.assessment-form-heading {
+  padding-bottom: 16px;
+  color: #f8fafc;
+  font-size: 1rem;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.assessment-form-note {
+  margin: 14px 0 22px;
+  line-height: 1.5;
+}
+
+.assessment-field {
+  margin-bottom: 18px;
+}
+
+.assessment-field:last-of-type {
+  margin-bottom: 24px;
+}
+
+.assessment-field .hud-label {
+  margin-bottom: 8px;
+  color: #e2e8f0;
+  font-size: 0.8rem;
+}
+
+.assessment-field .hud-input {
+  padding: 10px 12px;
+  color: #e2e8f0;
+  background: #0c0c0c;
+  border-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.assessment-field .hud-input option {
+  color: #e2e8f0;
+  background: #181818;
+}
+
+.assessment-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+#modal-global .assessment-modal-actions .btn-hud-primary,
+#modal-global .assessment-modal-actions .btn-hud-secondary {
+  min-width: 150px;
+  justify-content: center;
+}
+
+.modal-backdrop.show {
+  background-color: rgba(3, 7, 18, 0.62);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+body.modal-open .app-layout {
+  filter: blur(6px);
+  transition: filter 0.2s ease;
+}
+
 /* Hazards Detail Grid */
 .hazard-detail-grid {
   display: grid;
