@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,8 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@500;600;700&display=swap"
-        rel="stylesheet"
-    />
+        rel="stylesheet" />
 
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -22,6 +22,7 @@
     <!-- Custom CSS -->
     @vite(['resources/css/app.css'])
 </head>
+
 <body class="space-theme">
     <!-- Cosmic Background Layers -->
     <div class="space-bg-layer" id="space-bg" style="background-image: url('{{ asset('assets/back.png') }}');"></div>
@@ -40,6 +41,16 @@
             @yield('content')
         </main>
 
+        <!-- ===================== QUESTIONNAIRE MODAL ===================== -->
+        @include('frontend.modals.ques-modal')
+
+        <!-- Flight Surgeon Modal -->
+        @include('frontend.modals.surgeon-modal')
+
+
+        <!-- Hazards Details Modal -->
+        @include('frontend.modals.hazards-modal')
+
         <!-- Footer -->
         @include('frontend.layout.footer')
     </div>
@@ -54,4 +65,5 @@
     <!-- Custom Logic -->
     @vite(['resources/js/app.js'])
 </body>
+
 </html>
