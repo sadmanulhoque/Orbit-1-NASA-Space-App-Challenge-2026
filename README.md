@@ -4,21 +4,7 @@
 
 ## Interface Preview
 
-### Mission control dashboard
-
-![ORBIT-1 mission control dashboard](public/assets/preview/image_1.png)
-
-### Health assessment workflow
-
-![ORBIT-1 astronaut health assessment](public/assets/preview/image_2.png)
-
-### Mission readiness and health telemetry
-
-![ORBIT-1 health status telemetry](public/assets/preview/image_3.png)
-
-### Hazard monitoring and operational guidance
-
-![ORBIT-1 hazard and guidance interface](public/assets/preview/image_4.png)
+![ORBIT-1 feature preview](public/assets/preview/preview.gif)
 
 ORBIT-1 is a NASA-inspired astronaut health monitoring system designed for the
 NASA Space Apps Challenge 2026. The application translates a daily astronaut
