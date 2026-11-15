@@ -16,5 +16,4 @@ enum Feelings: string
             self::HIGH => 'Quite isolated',
         };
     }
-
 }

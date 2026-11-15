@@ -18,6 +18,4 @@ enum SleepHours: string
             self::MORE_THAN_8 => 'More than 8 hours',
         };
     }
-
 }
-

@@ -14,7 +14,6 @@
     <section class="grid-col col-center">
         @include('frontend.home-sections.astronaut')
 
-
         <!-- Health Trends (kept mostly static for visual) -->
         @include('frontend.home-sections.health-trends')
     </section>

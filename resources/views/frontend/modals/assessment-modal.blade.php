@@ -1,9 +1,7 @@
 <div class="modal-header assessment-modal-header">
     <div>
         <h5 class="modal-title">Astronaut Daily Health Assessment</h5>
-        <p class="assessment-modal-subtitle mb-0">
-            Temporary check-in for mission readiness and body system status.
-        </p>
+        <p class="assessment-modal-subtitle mb-0">Temporary check-in for mission readiness and body system status.</p>
     </div>
     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>

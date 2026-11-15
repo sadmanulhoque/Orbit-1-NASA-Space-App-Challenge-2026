@@ -5,9 +5,7 @@
     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body assessment-modal-body">
-    <div class="comm-channel-badge">
-        <span class="dot-online"></span> Channel Active: Station Telemetry Link #04
-    </div>
+    <div class="comm-channel-badge"><span class="dot-online"></span> Channel Active: Station Telemetry Link #04</div>
     <div class="form-group mb-3">
         <label class="hud-label">Telemetry Snapshot</label>
         <div class="telemetry-mini-preview">
@@ -19,7 +17,8 @@
     </div>
     <div class="form-group mb-3">
         <label class="hud-label" for="surgeon-msg">Message to Flight Surgeon</label>
-        <textarea id="surgeon-msg" class="hud-input" rows="3" placeholder="Describe symptoms or request advice...">Requesting consultation regarding current health telemetry and recommended protocols.</textarea>
+        <textarea id="surgeon-msg" class="hud-input" rows="3" placeholder="Describe symptoms or request advice...">
+Requesting consultation regarding current health telemetry and recommended protocols.</textarea>
     </div>
     <div class="modal-actions">
         <button class="btn-hud-secondary" data-bs-dismiss="modal" id="cancel-surgeon-modal">Cancel</button>

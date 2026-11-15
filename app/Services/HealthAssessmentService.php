@@ -241,7 +241,6 @@ class HealthAssessmentService
         $data['hazard_distance_pct'] = 32;
     }
 
-
     public function getSleepHours(): array
     {
         return SleepHours::cases();
@@ -266,8 +265,6 @@ class HealthAssessmentService
     {
         return Feelings::cases();
     }
-
-
 
     public function getEnergyLevel(): array
     {

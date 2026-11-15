@@ -8,5 +8,3 @@ Route::get('/assessment/create', [HomeController::class, 'create'])->name('asses
 Route::post('/assessment/store', [HomeController::class, 'storeAssessment'])->name('assessment.store');
 Route::get('/hazards', [HomeController::class, 'hazards'])->name('hazards.index');
 Route::get('/surgeon', [HomeController::class, 'surgeon'])->name('surgeon.index');
-
-
