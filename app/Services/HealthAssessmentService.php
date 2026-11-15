@@ -22,6 +22,7 @@ class HealthAssessmentService
     {
         return $this->repository->latest();
     }
+
     public function getTrendData(): array
     {
         $assessments = $this->repository
@@ -58,9 +59,15 @@ class HealthAssessmentService
 
     public function getAssessmentStreakDays(?HealthAssessment $assessment): int
     {
-        return $assessment
-        ? $assessment->created_at->startOfDay()->diffInDays(now()->startOfDay()) + 1
-        : 0;
+        if (! $assessment) {
+            return 0;
+        }
+
+        return HealthAssessment::query()
+            ->selectRaw('DATE(created_at) as assessment_date')
+            ->distinct()
+            ->get()
+            ->count();
     }
 
     public function processAssessment(array $answers): HealthAssessment
