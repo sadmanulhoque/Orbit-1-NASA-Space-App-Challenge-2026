@@ -85,6 +85,6 @@
     </script>
 
     <!-- Custom Logic -->
-    @vite(['resources/js/app.js'])
+    @vite(['resources/js/app.js', 'resources/js/apexchart.js'])
 </body>
 </html>

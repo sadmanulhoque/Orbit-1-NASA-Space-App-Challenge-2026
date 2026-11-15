@@ -18,18 +18,14 @@
     <div class="chart-container-box">
         <div class="chart-y-axis"><span>150</span><span>120</span><span>90</span><span>60</span></div>
         <div class="chart-canvas-wrapper">
-            <canvas id="healthTrendsCanvas"></canvas>
-            <div class="chart-tooltip-marker" id="chart-marker">
-                <div class="tooltip-box">
-                    <div class="tooltip-title">Day 12</div>
-                    <div class="tooltip-val">
-                        <span class="tt-dot"></span> HR: {{ $assessment->heart_rate ?? 72 }} bpm
-                    </div>
-                </div>
-            </div>
+            <div id="healthTrendsChart" data-chart='@json($trendData)'></div>
         </div>
     </div>
     <div class="chart-x-axis">
-        <span>Day 6</span><span>Day 8</span><span>Day 10</span><span class="active-day">Day 12</span>
+        @forelse ($trendData['labels'] as $label)
+            <span class="{{ $loop->last ? 'active-day' : '' }}">{{ $label }}</span>
+        @empty
+            <span>No assessment history</span>
+        @endforelse
     </div>
 </div>

@@ -21,6 +21,31 @@ class HealthAssessmentService
     {
         return $this->repository->latest();
     }
+    public function getTrendData(): array
+    {
+        $assessments = $this->repository->trend();
+
+        return [
+            'labels' => $assessments
+                ->map(fn (HealthAssessment $assessment): string => $assessment->created_at->format('M j'))
+                ->values()
+                ->all(),
+            'series' => [
+                [
+                    'name' => 'Heart Rate',
+                    'data' => $assessments->map(fn (HealthAssessment $assessment): int => (int) $assessment->heart_rate)->values()->all(),
+                ],
+                [
+                    'name' => 'Blood Pressure',
+                    'data' => $assessments->map(fn (HealthAssessment $assessment): int => (int) explode('/', $assessment->blood_pressure)[0])->values()->all(),
+                ],
+                [
+                    'name' => 'Temperature',
+                    'data' => $assessments->map(fn (HealthAssessment $assessment): float => (float) $assessment->temperature)->values()->all(),
+                ],
+            ],
+        ];
+    }
 
     public function getAssessmentStreakDays(?HealthAssessment $assessment): int
     {

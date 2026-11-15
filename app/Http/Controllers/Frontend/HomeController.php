@@ -19,8 +19,9 @@ class HomeController extends Controller
 
         $assessment = $this->service->getLatestAssessment();
         $streakDays = $this->service->getAssessmentStreakDays($assessment);
+        $trendData = $this->service->getTrendData();
 
-        return view('frontend.home', compact('assessment', 'streakDays'));
+        return view('frontend.home', compact('assessment', 'streakDays', 'trendData'));
 
     }
 

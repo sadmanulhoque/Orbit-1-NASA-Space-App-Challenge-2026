@@ -1040,55 +1040,9 @@ html, body {
   height: 100%;
 }
 
-#healthTrendsCanvas {
+#healthTrendsChart {
   width: 100%;
   height: 100%;
-  display: block;
-}
-
-.chart-tooltip-marker {
-  position: absolute;
-  top: 15%;
-  right: 14%;
-  pointer-events: none;
-  animation: floatTooltip 3s ease-in-out infinite;
-}
-
-.tooltip-box {
-  background: rgba(10, 25, 55, 0.95);
-  border: 1px solid rgba(56, 189, 248, 0.5);
-  border-radius: 8px;
-  padding: 6px 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7), 0 0 10px rgba(56, 189, 248, 0.3);
-  font-size: 0.74rem;
-  color: #ffffff;
-  white-space: nowrap;
-}
-
-.tooltip-title {
-  color: var(--text-dim);
-  font-size: 0.68rem;
-  margin-bottom: 2px;
-}
-
-.tooltip-val {
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.tt-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--neon-magenta);
-  box-shadow: 0 0 6px var(--neon-magenta);
-}
-
-@keyframes floatTooltip {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
 }
 
 .chart-x-axis {
