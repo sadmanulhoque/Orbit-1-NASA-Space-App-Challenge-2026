@@ -23,6 +23,13 @@ class HealthAssessmentService
         return $this->repository->latest();
     }
 
+    public function hasAssessmentToday(): bool
+    {
+        return HealthAssessment::query()
+            ->whereDate('created_at', today())
+            ->exists();
+    }
+
     public function getTrendData(): array
     {
         $assessments = $this->repository

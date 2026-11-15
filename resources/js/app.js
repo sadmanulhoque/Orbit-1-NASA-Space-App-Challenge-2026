@@ -1,4 +1,13 @@
 var notyf = new Notyf();
+
+$(function () {
+    const assessmentTrigger = $('[data-auto-open-modal="assessment"][data-auto-open="true"]').first();
+
+    if (assessmentTrigger.length) {
+        assessmentTrigger[0].click();
+    }
+});
+
 $(document).on("click", '[data-bs-toggle="modal"][data-content]', function (e) {
     e.preventDefault();
 
@@ -42,6 +51,8 @@ $(document).on("click", '[data-bs-toggle="modal"][data-content]', function (e) {
                 },
             });
         });
+
+        bootstrap.Modal.getOrCreateInstance(modal[0]).show();
     });
 });
 

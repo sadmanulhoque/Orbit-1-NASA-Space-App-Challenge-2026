@@ -12,6 +12,7 @@
             data-content="{{ route('assessment.create') }}"
             data-modal-size="lg"
             data-auto-open-modal="assessment"
+            data-auto-open="{{ $assessmentDueToday ? 'true' : 'false' }}"
         >
             <i class="fa-solid fa-pencil"></i> New Assessment
         </button>
