@@ -943,38 +943,6 @@ html, body {
   overflow: hidden;
 }
 
-.trend-tabs {
-  display: flex;
-  align-items: center;
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(56, 189, 248, 0.25);
-  border-radius: var(--radius-pill);
-  padding: 3px;
-}
-
-.trend-tab-btn {
-  background: transparent;
-  border: none;
-  color: var(--text-dim);
-  font-family: var(--font-tech);
-  font-size: 0.88rem;
-  font-weight: 600;
-  padding: 4px 14px;
-  border-radius: var(--radius-pill);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.trend-tab-btn:hover {
-  color: #ffffff;
-}
-
-.trend-tab-btn.active {
-  background: #2563eb;
-  color: #ffffff;
-  box-shadow: 0 0 12px rgba(37, 99, 235, 0.6);
-}
-
 .trend-legend {
   display: flex;
   align-items: center;
@@ -997,41 +965,33 @@ html, body {
   border-radius: 50%;
 }
 
-.dot-magenta {
+.dot-readiness {
   background: var(--neon-magenta);
   box-shadow: 0 0 6px var(--neon-magenta);
 }
 
-.dot-blue {
+.dot-sleep {
   background: var(--neon-blue);
   box-shadow: 0 0 6px var(--neon-blue);
 }
 
-.dot-cyan {
+.dot-heart {
+  background: var(--neon-cyan);
+  box-shadow: 0 0 6px var(--neon-cyan);
+}
+
+.dot-temperature {
   background: var(--neon-green-glow);
   box-shadow: 0 0 6px var(--neon-green-glow);
 }
 
 /* Chart Canvas Area */
 .chart-container-box {
-  display: grid;
-  grid-template-columns: 35px 1fr;
-  align-items: center;
+  display: block;
   height: 104px;
   max-height: 104px;
   min-height: 0;
   position: relative;
-}
-
-.chart-y-axis {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
-  font-family: var(--font-tech);
-  font-size: 0.88rem;
-  color: var(--text-dim);
-  padding-bottom: 6px;
 }
 
 .chart-canvas-wrapper {
@@ -1048,7 +1008,7 @@ html, body {
 .chart-x-axis {
   display: flex;
   justify-content: space-between;
-  padding-left: 35px;
+  padding-left: 0;
   padding-right: 15px;
   margin-top: 6px;
   font-family: var(--font-tech);
@@ -2332,10 +2292,7 @@ body.modal-open .app-layout {
 .status-normal .dot,
 .status-watch .dot,
 .hotspot-line,
-.trend-tab-btn.active,
 .legend-dot,
-.tooltip-box,
-.tt-dot,
 .edit-pill-btn:hover,
 .vital-icon,
 .icon-red,

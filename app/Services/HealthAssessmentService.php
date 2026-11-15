@@ -10,6 +10,7 @@ use App\Enums\MuscleDiscomfort;
 use App\Enums\SleepHours;
 use App\Interfaces\HealthAssessmentInterface;
 use App\Models\HealthAssessment;
+use Illuminate\Database\Eloquent\Collection;
 
 class HealthAssessmentService
 {
@@ -23,7 +24,11 @@ class HealthAssessmentService
     }
     public function getTrendData(): array
     {
-        $assessments = $this->repository->trend();
+        $assessments = $this->repository
+            ->trend()
+            ->groupBy(fn (HealthAssessment $assessment): string => $assessment->created_at->toDateString())
+            ->map(fn (Collection $dailyAssessments): HealthAssessment => $dailyAssessments->last())
+            ->values();
 
         return [
             'labels' => $assessments
@@ -32,12 +37,16 @@ class HealthAssessmentService
                 ->all(),
             'series' => [
                 [
-                    'name' => 'Heart Rate',
-                    'data' => $assessments->map(fn (HealthAssessment $assessment): int => (int) $assessment->heart_rate)->values()->all(),
+                    'name' => 'Readiness Score',
+                    'data' => $assessments->map(fn (HealthAssessment $assessment): int => (int) $assessment->readiness_score)->values()->all(),
                 ],
                 [
-                    'name' => 'Blood Pressure',
-                    'data' => $assessments->map(fn (HealthAssessment $assessment): int => (int) explode('/', $assessment->blood_pressure)[0])->values()->all(),
+                    'name' => 'Sleep Hours',
+                    'data' => $assessments->map(fn (HealthAssessment $assessment): float => (float) $assessment->sleep_hours_display)->values()->all(),
+                ],
+                [
+                    'name' => 'Heart Rate',
+                    'data' => $assessments->map(fn (HealthAssessment $assessment): int => (int) $assessment->heart_rate)->values()->all(),
                 ],
                 [
                     'name' => 'Temperature',

@@ -24,7 +24,7 @@ function initializeHealthTrendsChart() {
             background: "transparent",
         },
         series: chartData.series,
-        colors: ["#e879f9", "#38bdf8", "#34d399"],
+        colors: ["#e879f9", "#38bdf8", "#22d3ee", "#34d399"],
         stroke: {
             curve: "smooth",
             width: 2,
@@ -46,8 +46,9 @@ function initializeHealthTrendsChart() {
             axisTicks: { show: false },
         },
         yaxis: [
-            { min: 60, max: 90, show: false },
-            { min: 90, max: 150, show: false },
+            { min: 40, max: 100, show: false },
+            { min: 0, max: 10, show: false },
+            { min: 60, max: 100, show: false },
             { min: 36, max: 37.2, show: false },
         ],
         legend: { show: false },

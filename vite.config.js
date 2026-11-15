@@ -10,7 +10,8 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/css/tabler.css',
                 'resources/css/tabler.min.css',
-                'resources/js/app.js'],
+                'resources/js/app.js',
+                'resources/js/apexchart.js'],
             refresh: true,
             fonts: [
                 bunny('Instrument Sans', {
