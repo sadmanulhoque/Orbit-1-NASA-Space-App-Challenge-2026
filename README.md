@@ -1,10 +1,9 @@
 # ORBIT-1
-
-### Astronaut Biometric & Mission Readiness Telemetry
-
 ## Interface Preview
 
-![ORBIT-1 feature preview](public/assets/preview/preview.gif)
+<p align="center">
+  <img src="public/assets/preview/preview.gif" alt="ORBIT-1 feature preview" width="100%" />
+</p>
 
 ORBIT-1 is a NASA-inspired astronaut health monitoring system designed for the
 NASA Space Apps Challenge 2026. The application translates a daily astronaut
